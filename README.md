@@ -282,8 +282,7 @@ SHOW DATABASES;
 ```
 docker exec -it mycatdockerdemo_mysql-1-slave_1 mysql -uroot -proot -P 8066 -hmycat
 ```
-![](https://kekekeke.sh1a.qingstor.com/QQ20180418-171502.png)
-
+![](temp1.png)
 可以看到我们已经连接到mycat提供的mysql server，并且可以看到我们在schema.xml定义的table，其中country是glabel表（存在于所有的datanode）,mycat_sequence是全局序列表存在于dn1, user分片表，order是user子表。
 #### 准备序列表+function
 需要在dn1上执行
