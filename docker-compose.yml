@@ -1,0 +1,41 @@
+version: '3'
+services:
+  mysql-1-master:
+    image: mysql:5.7
+    volumes:
+      - ./mysql/conf/master.cnf:/etc/mysql/my.cnf
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+  mysql-1-slave:
+    image: mysql:5.7
+    volumes:
+      - ./mysql/conf/slave.cnf:/etc/mysql/my.cnf
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+  mysql-2-master:
+    image: mysql:5.7
+    volumes:
+      - ./mysql/conf/master.cnf:/etc/mysql/my.cnf
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+  mysql-2-slave:
+    image: mysql:5.7
+    volumes:
+      - ./mysql/conf/slave.cnf:/etc/mysql/my.cnf
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+  mycat:
+    build:
+      context: ./mycat
+    volumes:
+      - ./mycat/conf:/usr/local/mycat/conf
+      - ./mycat/logs:/usr/local/mycat/logs
+    ports:
+      - 8066:8066
+      - 9066:9066
+    depends_on:
+      - mysql-1-master
+      - mysql-1-slave
+      - mysql-2-master
+      - mysql-2-slave
+    restart: always

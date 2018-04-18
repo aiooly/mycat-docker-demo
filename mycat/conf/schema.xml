@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE mycat:schema SYSTEM "schema.dtd">
+<mycat:schema xmlns:mycat="http://io.mycat/">
+	<schema name="test" checkSQLschema="false" sqlMaxLimit="100">
+		<!-- auto sharding by id (long) -->
+		<table name="user" primaryKey="id" dataNode="dn1,dn2" rule="mod-long" autoIncrement="true">
+			<childTable name="orders" primaryKey="id" joinKey="user_id" autoIncrement="true"
+						parentKey="id">
+			</childTable>
+		</table>
+
+		<!-- global table is auto cloned to all defined data nodes ,so can join
+			with any table whose sharding node is in the same data node -->
+		<table name="country" primaryKey="id" type="global" dataNode="dn1,dn2" />
+		<table name="mycat_sequence" primaryKey="name" dataNode="dn1"/>
+		<table name="address" primaryKey="id" dataNode="dn1" />
+	</schema>
+	<dataNode name="dn1" dataHost="mysql1" database="db1" />
+	<dataNode name="dn2" dataHost="mysql2" database="db2" />
+	<dataHost name="mysql1" maxCon="1000" minCon="10" balance="3"
+			  writeType="0" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">
+		<heartbeat>select user()</heartbeat>
+		<!-- can have multi write hosts -->
+		<writeHost host="mysql-1-master" url="mysql-1-master:3306" user="root"
+				   password="root">
+			<!-- can have multi read hosts -->
+			<readHost host="mysql-1-slave" url="mysql-1-slave:3306" user="root" password="root" />
+		</writeHost>
+	</dataHost>
+	<dataHost name="mysql2" maxCon="1000" minCon="10" balance="3"
+			  writeType="0" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">
+		<heartbeat>select user()</heartbeat>
+		<!-- can have multi write hosts -->
+		<writeHost host="mysql-2-master" url="mysql-2-master:3306" user="root"
+				   password="root">
+			<!-- can have multi read hosts -->
+			<readHost host="mysql-2-slave" url="mysql-2-slave:3306" user="root" password="root" />
+		</writeHost>
+	</dataHost>
+</mycat:schema>
